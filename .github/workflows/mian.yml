@@ -49,7 +49,14 @@ jobs:
           
       - name: '安装依赖'
         run: |
-          pip install selenium pytz
+          pip install --upgrade pip
+          pip install pytz
+          pip install requests==2.26.0
+          pip install lxml==4.6.5
+          pip install selenium==3.141.0
+          pip install numpy==1.19.5
+          pip install retrying==1.3.3
+          pip install wheel==0.37.1
           
       - name: '准备Chrome驱动'
         uses: nanasess/setup-chromedriver@v2

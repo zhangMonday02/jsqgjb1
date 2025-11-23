@@ -1,0 +1,20 @@
+[
+  {
+    "username": "13800000001",
+    "password": "Password123",
+    "sku": "SKU_CODE_A",
+    "activity_id": "b51c4cf07b794278a79092674af8b563"
+  },
+  {
+    "username": "13800000002",
+    "password": "Password456",
+    "sku": "SKU_CODE_B",
+    "activity_id": "b51c4cf07b794278a79092674af8b563"
+  },
+  {
+    "username": "8906653A",
+    "password": "Password789",
+    "sku": "SKU_CODE_A",
+    "activity_id": "b51c4cf07b794278a79092674af8b563"
+  }
+]

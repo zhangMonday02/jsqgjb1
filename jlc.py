@@ -384,7 +384,19 @@ def main():
             log("❌ 登录失败，程序退出")
             sys.exit(1)
         
-        # 跳转到指定页面
+        # 计算北京时间9:58的目标时间，如果已过则第二天
+        beijing_tz = pytz.timezone('Asia/Shanghai')
+        now = datetime.now(beijing_tz)
+        target_open_time = now.replace(hour=9, minute=58, second=0, microsecond=0)
+        if now > target_open_time:
+            target_open_time += timedelta(days=1)
+        
+        log(f"程序将等待直到北京时间 {target_open_time.strftime('%Y-%m-%d %H:%M:%S')} 打开抢购页面")
+        
+        while datetime.now(beijing_tz) < target_open_time:
+            time.sleep(1)  # 每秒检查一次，停留在登录后的页面
+        
+        # 达到9:58，跳转到指定页面
         driver.get("https://www.jlc.com/portal/anniversary-doubleActivity")
         log("已跳转到 https://www.jlc.com/portal/anniversary-doubleActivity")
         WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.TAG_NAME, "body")))

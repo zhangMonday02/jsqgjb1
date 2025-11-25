@@ -349,19 +349,8 @@ def perform_login(driver, username, password):
 
     return True
 
-def main():
-    if len(sys.argv) < 5:
-        print("用法: python jlc.py 账号 密码 SKU 活动ID")
-        print("示例: python jlc.py user1 pwd1 SKU123 ActivityID456")
-        sys.exit(1)
-    
-    username = sys.argv[1].strip()
-    password = sys.argv[2].strip()
-    target_sku = sys.argv[3].strip()
-    activity_id = sys.argv[4].strip()
-    
-    log(f"🚀 启动任务 | 账号: {username} | 目标SKU: {target_sku}")
-    
+def init_driver():
+    """初始化浏览器驱动"""
     chrome_options = Options()
     chrome_options.add_argument("--headless=new")
     chrome_options.add_argument("--no-sandbox")
@@ -379,11 +368,66 @@ def main():
     driver = webdriver.Chrome(options=chrome_options, desired_capabilities=caps)
     driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
     
-    try:
-        if not perform_login(driver, username, password):
-            log("❌ 登录失败，程序退出")
-            sys.exit(1)
+    return driver
+
+def login_with_retry(username, password, max_retries=5):
+    """带重试的登录功能"""
+    for attempt in range(1, max_retries + 1):
+        log(f"🔄 登录尝试第 {attempt}/{max_retries} 次")
         
+        driver = init_driver()
+        
+        try:
+            if perform_login(driver, username, password):
+                log("✅ 登录成功")
+                return driver
+            else:
+                log(f"❌ 第 {attempt} 次登录失败")
+                if attempt < max_retries:
+                    log("🔄 重置浏览器并重试...")
+                    driver.quit()
+                    time.sleep(2 + random.uniform(0, 2))  # 随机延迟2-4秒
+                else:
+                    log(f"❌ 经过 {max_retries} 次尝试后登录仍然失败")
+                    driver.quit()
+                    return None
+        except Exception as e:
+            log(f"❌ 第 {attempt} 次登录出现异常: {e}")
+            try:
+                driver.quit()
+            except:
+                pass
+            
+            if attempt < max_retries:
+                log("🔄 重置浏览器并重试...")
+                time.sleep(2 + random.uniform(0, 2))  # 随机延迟2-4秒
+            else:
+                log(f"❌ 经过 {max_retries} 次尝试后登录仍然失败")
+                return None
+    
+    return None
+
+def main():
+    if len(sys.argv) < 5:
+        print("用法: python jlc.py 账号 密码 SKU 活动ID")
+        print("示例: python jlc.py user1 pwd1 SKU123 ActivityID456")
+        sys.exit(1)
+    
+    username = sys.argv[1].strip()
+    password = sys.argv[2].strip()
+    target_sku = sys.argv[3].strip()
+    activity_id = sys.argv[4].strip()
+    
+    log(f"🚀 启动任务 | 账号: {username} | 目标SKU: {target_sku}")
+    
+    # 使用带重试的登录功能
+    driver = login_with_retry(username, password, max_retries=5)
+    
+    if not driver:
+        log("❌ 登录失败，程序退出")
+        sys.exit(1)
+    
+    try:
         # 计算北京时间9:57的目标时间，如果已过则第二天
         beijing_tz = pytz.timezone('Asia/Shanghai')
         now = datetime.now(beijing_tz)

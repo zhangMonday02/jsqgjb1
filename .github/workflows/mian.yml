@@ -3,8 +3,8 @@ name: 嘉立创全自动并发抢购
 on:
   workflow_dispatch:  # 允许手动触发
   schedule:
-    # 每天 UTC 0点 (北京时间 08:00) 运行
-    - cron: '00 00 * * *'
+    # 每天 UTC 22点 (北京时间 6:00) 运行
+    - cron: '00 22 * * *'
 
 jobs:
   # 第一阶段：解析配置

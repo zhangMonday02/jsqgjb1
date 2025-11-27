@@ -637,12 +637,12 @@ async function startJLCSeckill() {
             }  
         }, 5);  
           
-        // 15秒后停止 (检查计时器来停止，以防成功处理失败)  
+        // 20秒后停止 (检查计时器来停止，以防成功处理失败)  
         setTimeout(() => {  
             stop = true;  
             clearInterval(checkInterval);  
             console.log(`🛑 停止请求（超时保护）。共计尝试发送 ${count} 次请求。没显示牛逼抢到了就是妹成功，哎`);  
-        }, 15000);  
+        }, 20000);  
     };  
 
     // 5. 倒计时调度  
